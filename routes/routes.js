@@ -1,29 +1,32 @@
-let User = require("./model/user");
+// let User = require("model/user");
+const express = require("express");
+const app = express();
 
-// Signin API
-app.get("/sigin", (req, res) => {
-  res.send("Hello World!");
-});
+module.exports = {
+  // Signin API
+  signIn: (req, res) => {
+    res.send("signin");
+  },
 
-// Registration API
-app.get("/register", (req, res) => {
-  res.send("Hello World!");
-});
+  // Registration API
+  register: (req, res) => {
+    res.send("register");
+  },
+  // Services API
+  services: (req, res) => {
+    res.send("services");
+  },
 
-// Services API
-app.get("/services", (req, res) => {
-  res.send("Hello World!");
-});
+  getServiceByID: (req, res) => {
+    res.send("service by id");
+  },
 
-app.get("/services/id", (req, res) => {
-  res.send("Hello World!");
-});
+  // Shop API
+  shop: (req, res) => {
+    res.send("shop");
+  },
 
-// Shop API
-app.get("/shop", (req, res) => {
-  res.send("Hello World!");
-});
-
-app.get("/shop/id", (req, res) => {
-  res.send("Hello World!");
-});
+  getShopById: (req, res) => {
+    res.send("shop by id");
+  },
+};
