@@ -5,28 +5,28 @@ const app = express();
 module.exports = {
   // Signin API
   signIn: (req, res) => {
-    res.send("hello");
+    res.send("signin");
   },
 
   // Registration API
   register: (req, res) => {
-    res.send("Hello World!");
+    res.send("register");
   },
   // Services API
   services: (req, res) => {
-    res.send("Hello World!");
+    res.send("services");
   },
 
   getServiceByID: (req, res) => {
-    res.send("Hello World!");
+    res.send("service by id");
   },
 
   // Shop API
   shop: (req, res) => {
-    res.send("Hello World!");
+    res.send("shop");
   },
 
   getShopById: (req, res) => {
-    res.send("Hello World!");
+    res.send("shop by id");
   },
 };
