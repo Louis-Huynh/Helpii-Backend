@@ -1,6 +1,10 @@
 const express = require("express");
+var cors = require("cors");
+
 const app = express();
-const port = process.env.PORT || 3000;
+app.use(cors());
+
+const port = process.env.PORT || 3001;
 
 let routes = require("./routes/routes.js");
 
@@ -12,7 +16,7 @@ app.get("/services", (req, res) => {
   routes.services(req, res);
 });
 
-app.get("/register", (req, res) => {
+app.post("/register", (req, res) => {
   routes.register(req, res);
 });
 
