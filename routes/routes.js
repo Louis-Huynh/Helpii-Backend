@@ -20,7 +20,8 @@ module.exports = {
 
   // Registration API
   register: (req, res) => {
-    console.log(res.data);
+    console.log(req.body);
+
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = "hello";
 
