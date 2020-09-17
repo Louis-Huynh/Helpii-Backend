@@ -1,6 +1,15 @@
 const express = require("express");
+var cors = require("cors");
+
+var bodyParser = require("body-parser");
+
 const app = express();
-const port = process.env.PORT || 3000;
+app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const port = process.env.PORT || 3001;
 
 let routes = require("./routes/routes.js");
 
@@ -12,7 +21,7 @@ app.get("/services", (req, res) => {
   routes.services(req, res);
 });
 
-app.get("/register", (req, res) => {
+app.post("/register", (req, res) => {
   routes.register(req, res);
 });
 
