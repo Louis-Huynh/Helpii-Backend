@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const Services = require("../model/services");
+const Shop = require("../model/shop");
 
 module.exports = {
   // Signin API
@@ -14,8 +16,6 @@ module.exports = {
         console.log("it's bad");
       }
     });
-
-    res.send("signin");
   },
 
   // Registration API
@@ -24,7 +24,7 @@ module.exports = {
 
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = "hello";
-
+    console.log(res.data);
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
       // Store hash in your password DB.
       console.log(hash);
@@ -34,7 +34,9 @@ module.exports = {
   },
   // Services API
   services: (req, res) => {
-    res.send("services");
+    Services.find({}).then((services) => {
+      res.json(services);
+    });
   },
 
   getServiceByID: (req, res) => {
@@ -43,10 +45,17 @@ module.exports = {
 
   // Shop API
   shop: (req, res) => {
-    res.send("shop");
+    Shop.find({}).then((shop) => {
+      res.json(shop);
+    });
+    // res.send("shop");
   },
 
   getShopById: (req, res) => {
     res.send("shop by id");
+  },
+
+  home: (req, res) => {
+    res.json({ name: "tobyeet" });
   },
 };

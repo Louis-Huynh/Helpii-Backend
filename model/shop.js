@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
-
-const shopSchema = new Schema({
-  name: { type: String, require: true },
+const shopSchema = new mongoose.Schema({
+  title: String,
 });
 
-const Shop = mongoose.model("Shop", shopSchema);
+shopSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
-module.exports = Shop;
+module.exports = mongoose.model("Shop", shopSchema);
