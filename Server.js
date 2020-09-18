@@ -43,10 +43,6 @@ app.get("/services", (req, res) => {
   routes.services(req, res);
 });
 
-app.post("/register", (req, res) => {
-  routes.register(req, res);
-});
-
 app.get("/services/id", (req, res) => {
   routes.getServiceByID(req, res);
 });
@@ -58,6 +54,18 @@ app.get("/shop", (req, res) => {
 
 app.get("/shop/id", (req, res) => {
   routes.getShopById(req, res);
+});
+
+app.post("/register", (req, res) => {
+  routes.register(req, res);
+});
+
+app.post("/services", (req, res) => {
+  routes.postServices(req, res);
+});
+
+app.post("/shop", (req, res) => {
+  routes.postShop(req, res);
 });
 
 app.listen(port, () => {
