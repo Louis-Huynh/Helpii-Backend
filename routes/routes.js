@@ -25,7 +25,7 @@ module.exports = {
 
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = "hello";
-    console.log(res.data);
+    // console.log(res.data);
     let hashedPass;
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
       // Store hash in your password DB.
@@ -33,11 +33,13 @@ module.exports = {
       hashedPass = hash;
     });
 
+    console.log(req.body.username);
+
     //need the image
     const user = new User({
-      username: res.data.username,
-      email: res.data.email,
-      password: res.data.hashedPass,
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.hashedPass,
     });
 
     user
@@ -78,17 +80,18 @@ module.exports = {
   postShop: (req, res) => {
     //logic here
   },
+
   postServices: (req, res) => {
     console.log(req.body);
 
-    // const saltRounds = Math.floor(Math.random() * 10);
-    // const myPlaintextPassword = "hello";
-    // console.log(res.data);
-    // let hashedPass;
-    // bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
-    //   // Store hash in your password DB.
-    //   console.log(hash);
-    //   hashedPass = hash;
-    // });
+    const services = new User({
+      title: req.body.title,
+    });
+
+    services
+      .save()
+      .then((x) => x.toJSON())
+      .then((savedAndFormattedService) => res.json(savedAndFormattedService))
+      .catch((error) => next(error));
   },
 };
