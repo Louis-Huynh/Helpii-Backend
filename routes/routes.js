@@ -21,11 +21,8 @@ module.exports = {
 
   // Registration API
   register: (req, res) => {
-    console.log(req.body);
-
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = req.body.password;
-    console.log("plain: " + myPlaintextPassword);
 
     // console.log(res.data);
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
@@ -40,14 +37,10 @@ module.exports = {
         .save()
         .then((savedUser) => {
           savedUser.toJSON();
-          console.log(savedUser);
         })
         .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
         .catch((error) => next(error));
     });
-
-    // console.log(hashedPass);
-    // res.send("register");
   },
   // Services API
   services: (req, res) => {
