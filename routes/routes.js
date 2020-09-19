@@ -24,30 +24,29 @@ module.exports = {
     console.log(req.body);
 
     const saltRounds = Math.floor(Math.random() * 10);
-    const myPlaintextPassword = "hello";
+    const myPlaintextPassword = req.body.password;
+    console.log("plain: " + myPlaintextPassword);
+
     // console.log(res.data);
-    let hashedPass;
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
-      // Store hash in your password DB.
-      console.log(hash);
-      hashedPass = hash;
+      //need the image
+      const user = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: hash,
+      });
+
+      user
+        .save()
+        .then((savedUser) => {
+          savedUser.toJSON();
+          console.log(savedUser);
+        })
+        .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
+        .catch((error) => next(error));
     });
 
-    console.log(req.body.username);
-
-    //need the image
-    const user = new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.hashedPass,
-    });
-
-    user
-      .save()
-      .then((savedUser) => savedUser.toJSON())
-      .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
-      .catch((error) => next(error));
-
+    // console.log(hashedPass);
     // res.send("register");
   },
   // Services API
