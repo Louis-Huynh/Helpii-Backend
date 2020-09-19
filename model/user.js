@@ -1,11 +1,21 @@
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
-
-const userSchema = new Schema({
-  name: { type: String, require: true },
+const userSchema = new mongoose.Schema({
+  username: String,
+  email: String,
+  password: String,
+  profileImg: {
+    data: Buffer,
+    contentType: String,
+  },
 });
 
-const User = mongoose.model("User", userSchema);
+userSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
-module.exports = User;
+module.exports = mongoose.model("users", userSchema);

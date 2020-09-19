@@ -1,4 +1,7 @@
 const bcrypt = require("bcrypt");
+const Services = require("../model/services");
+const Shop = require("../model/shop");
+const User = require("../model/user");
 
 module.exports = {
   // Signin API
@@ -14,8 +17,6 @@ module.exports = {
         console.log("it's bad");
       }
     });
-
-    res.send("signin");
   },
 
   // Registration API
@@ -23,18 +24,36 @@ module.exports = {
     console.log(req.body);
 
     const saltRounds = Math.floor(Math.random() * 10);
-    const myPlaintextPassword = "hello";
+    const myPlaintextPassword = req.body.password;
+    console.log("plain: " + myPlaintextPassword);
 
+    // console.log(res.data);
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
-      // Store hash in your password DB.
-      console.log(hash);
+      //need the image
+      const user = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: hash,
+      });
+
+      user
+        .save()
+        .then((savedUser) => {
+          savedUser.toJSON();
+          console.log(savedUser);
+        })
+        .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
+        .catch((error) => next(error));
     });
 
-    res.send("register");
+    // console.log(hashedPass);
+    // res.send("register");
   },
   // Services API
   services: (req, res) => {
-    res.send("services");
+    Services.find({}).then((services) => {
+      res.json(services);
+    });
   },
 
   getServiceByID: (req, res) => {
@@ -43,10 +62,35 @@ module.exports = {
 
   // Shop API
   shop: (req, res) => {
-    res.send("shop");
+    Shop.find({}).then((shop) => {
+      res.json(shop);
+    });
+    // res.send("shop");
   },
 
   getShopById: (req, res) => {
     res.send("shop by id");
+  },
+
+  home: (req, res) => {
+    res.json({ name: "tobyeet" });
+  },
+
+  postShop: (req, res) => {
+    //logic here
+  },
+
+  postServices: (req, res) => {
+    console.log(req.body);
+
+    const services = new User({
+      title: req.body.title,
+    });
+
+    services
+      .save()
+      .then((x) => x.toJSON())
+      .then((savedAndFormattedService) => res.json(savedAndFormattedService))
+      .catch((error) => next(error));
   },
 };

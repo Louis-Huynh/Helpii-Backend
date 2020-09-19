@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
-
-const serviceSchema = new Schema({
-  name: { type: String, require: true },
+const serviceSchema = new mongoose.Schema({
+  title: String,
 });
 
-const Services = mongoose.model("Services", serviceSchema);
+serviceSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
-module.exports = Services;
+module.exports = mongoose.model("Services", serviceSchema);
