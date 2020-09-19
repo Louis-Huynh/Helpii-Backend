@@ -7,6 +7,7 @@ module.exports = {
   // Signin API
   signIn: (req, res) => {
     let myPlaintextPassword = req.body.password;
+    console.log("body", req.body);
 
     User.findOne({ email: req.body.email })
       .then((aUser) => {

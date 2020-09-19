@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
   routes.home(req, res);
 });
 
-app.get("/signin", (req, res) => {
+app.post("/signin", (req, res) => {
   routes.signIn(req, res);
 });
 
