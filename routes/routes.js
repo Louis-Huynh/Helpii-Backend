@@ -6,17 +6,30 @@ const User = require("../model/user");
 module.exports = {
   // Signin API
   signIn: (req, res) => {
-    let hash = "$2b$08$QtEab42ndLWinNQhxh8AGei/q7SOWpeO.zVCC6OL9s3166t/xxHDS";
-    let myPlaintextPassword = "helloae";
+    let myPlaintextPassword = req.body.password;
+    console.log("body", req.body);
 
-    bcrypt.compare(myPlaintextPassword, hash, function (err, result) {
-      // result == true
-      if (result) {
-        console.log("it's good");
-      } else {
-        console.log("it's bad");
-      }
-    });
+    User.findOne({ email: req.body.email })
+      .then((aUser) => {
+        let hash = aUser.password;
+
+        bcrypt.compare(myPlaintextPassword, hash, function (err, result) {
+          // result == true
+          const sendResult = {
+            email: aUser.email,
+          };
+
+          if (result) {
+            res.json(sendResult);
+          } else {
+            res.status(400).json({ error: "Invalid password" });
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        response.status(404).send({ error: "username does not exist" });
+      });
   },
 
   // Registration API
@@ -32,6 +45,7 @@ module.exports = {
         email: req.body.email,
         password: hash,
       });
+      console.log("hash: ", hash);
 
       user
         .save()
