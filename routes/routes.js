@@ -7,28 +7,26 @@ module.exports = {
   // Signin API
   signIn: (req, res) => {
     let myPlaintextPassword = req.body.password;
-    console.log("body", req.body);
 
     User.findOne({ email: req.body.email })
       .then((aUser) => {
         let hash = aUser.password;
 
         bcrypt.compare(myPlaintextPassword, hash, function (err, result) {
-          // result == true
           const sendResult = {
             email: aUser.email,
           };
 
           if (result) {
-            res.json(sendResult);
+            res.status(200).json(sendResult);
           } else {
             res.status(400).json({ error: "Invalid password" });
           }
         });
       })
       .catch((error) => {
-        console.log(error);
-        response.status(404).send({ error: "username does not exist" });
+        console.log("ERROR: ", error);
+        res.status(404).send({ error: "username does not exist" });
       });
   },
 
@@ -37,20 +35,20 @@ module.exports = {
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = req.body.password;
 
-    // console.log(res.data);
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
       //need the image
+
       const user = new User({
         username: req.body.username,
         email: req.body.email,
         password: hash,
       });
-      console.log("hash: ", hash);
 
       user
         .save()
         .then((savedUser) => {
           savedUser.toJSON();
+          console.log(savedUser);
         })
         .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
         .catch((error) => next(error));
