@@ -26,7 +26,7 @@ module.exports = {
           if (result) {
             res.status(200).json(sendSuccess);
           } else {
-            res.status(400).json(sendFailure);
+            res.json(sendFailure);
           }
         });
       })
