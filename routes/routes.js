@@ -8,25 +8,35 @@ module.exports = {
   signIn: (req, res) => {
     let myPlaintextPassword = req.body.password;
 
-    User.findOne({ email: req.body.email })
+    User.findOne({ email: req.body.email }) //find exactly one match
       .then((aUser) => {
         let hash = aUser.password;
 
         bcrypt.compare(myPlaintextPassword, hash, function (err, result) {
-          const sendResult = {
+          const sendSuccess = {
             email: aUser.email,
+            status: "Success",
+          };
+
+          const sendFailure = {
+            status: "Failure",
+            reason: "Invalid password",
           };
 
           if (result) {
-            res.status(200).json(sendResult);
+            res.status(200).json(sendSuccess);
           } else {
-            res.status(400).json({ error: "Invalid password" });
+            res.status(400).json(sendFailure);
           }
         });
       })
       .catch((error) => {
-        console.log("ERROR: ", error);
-        res.status(404).send({ error: "username does not exist" });
+        const sendFailure = {
+          status: "Failure",
+          reason: "username does not exist",
+        };
+
+        res.status(404).send(sendFailure);
       });
   },
 
