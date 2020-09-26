@@ -44,24 +44,45 @@ module.exports = {
   register: (req, res) => {
     const saltRounds = Math.floor(Math.random() * 10);
     const myPlaintextPassword = req.body.password;
+    //verify if already contains an email address
 
-    bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
-      //need the image
-
-      const user = new User({
-        username: req.body.username,
+    User.find({ email: req.body.email }, (err, response) => {
+      const sendSuccess = {
         email: req.body.email,
-        password: hash,
-      });
+        status: "Success",
+      };
 
-      user
-        .save()
-        .then((savedUser) => {
-          savedUser.toJSON();
-          console.log(savedUser);
-        })
-        .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
-        .catch((error) => next(error));
+      const sendFailure = {
+        status: "Failure",
+        reason: "Email already exist",
+      };
+
+      //does not contains an email
+      if (response.length == 0) {
+        bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
+          //need the image
+          const user = new User({
+            username: req.body.username,
+            email: req.body.email,
+            password: hash,
+          });
+
+          user
+            .save()
+            .then((savedUser) => {
+              savedUser.toJSON();
+              console.log(savedUser);
+            })
+            .then((savedAndFormattedUser) => res.json(savedAndFormattedUser))
+            .catch((error) => next(error));
+        });
+
+        res.send(sendSuccess);
+      }
+      //contains an email
+      else {
+        res.send(sendFailure);
+      }
     });
   },
   // Services API
@@ -107,5 +128,30 @@ module.exports = {
       .then((x) => x.toJSON())
       .then((savedAndFormattedService) => res.json(savedAndFormattedService))
       .catch((error) => next(error));
+  },
+
+  verifyEmail: (req, res) => {
+    User.find({ email: req.body.email }, (err, response) => {
+      console.log(response);
+
+      const sendSuccess = {
+        email: req.body.email,
+        status: "Success",
+      };
+
+      const sendFailure = {
+        status: "Failure",
+        reason: "Email already exist",
+      };
+
+      //contains an email
+      if (response.length == 0) {
+        res.send(sendSuccess);
+      }
+      // does not contains an email
+      else {
+        res.send(sendFailure);
+      }
+    });
   },
 };

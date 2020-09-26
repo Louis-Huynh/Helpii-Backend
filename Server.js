@@ -68,6 +68,10 @@ app.post("/shop", (req, res) => {
   routes.postShop(req, res);
 });
 
+app.post("/verify_email", (req, res) => {
+  routes.verifyEmail(req, res);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
