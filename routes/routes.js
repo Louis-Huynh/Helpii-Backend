@@ -15,6 +15,7 @@ module.exports = {
         bcrypt.compare(myPlaintextPassword, hash, function (err, result) {
           const sendSuccess = {
             email: aUser.email,
+            username: aUser.username,
             status: "Success",
           };
 
@@ -141,11 +142,11 @@ module.exports = {
 
       const sendFailure = {
         status: "Failure",
-        reason: "Email already exist",
+        reason: "Email does not exist",
       };
 
       //contains an email
-      if (response.length == 0) {
+      if (response.length) {
         res.send(sendSuccess);
       }
       // does not contains an email
