@@ -72,6 +72,10 @@ app.post("/verify_email", (req, res) => {
   routes.verifyEmail(req, res);
 });
 
+app.post("/reset_password", (req, res) => {
+  routes.resetPassword(req, res);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

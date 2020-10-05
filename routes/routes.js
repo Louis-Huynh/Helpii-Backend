@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Services = require("../model/services");
 const Shop = require("../model/shop");
 const User = require("../model/user");
+require("dotenv").config();
 
 module.exports = {
   // Signin API
@@ -154,5 +155,44 @@ module.exports = {
         res.send(sendFailure);
       }
     });
+  },
+
+  resetPassword: (req, res) => {
+    "use strict";
+    const nodemailer = require("nodemailer");
+
+    async function main() {
+      // create reusable transporter object using the default SMTP transport
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PW,
+        },
+      });
+
+      // send mail with defined transport object
+      let info = await transporter.sendMail({
+        from: process.env.EMAIL, // sender address
+        to: "kayleigh.jakubowski67@ethereal.email", // list of receivers
+        subject: "Hello =) ✔", // Subject line
+        text: "Hello world?2", // plain text body
+        html: "<b>Hello world?</b>", // html body
+      });
+
+      console.log("Message sent: %s", info.messageId);
+
+      transporter.sendMail(info, function (error, info) {
+        if (error) {
+          console.log(error);
+          res.status(400).json({ status: "Failure!" });
+        } else {
+          console.log("Email sent: " + info.response);
+          res.status(200).json({ status: "Success!" });
+        }
+      });
+    }
+
+    main().catch(console.error);
   },
 };
