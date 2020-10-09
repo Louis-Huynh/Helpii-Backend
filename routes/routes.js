@@ -118,11 +118,12 @@ module.exports = {
     //logic here
   },
 
-  postServices: (req, res) => {
-    console.log(req.body);
-
-    const services = new User({
+  create_service: (req, res) => {
+    const services = new Services({
       title: req.body.title,
+      username: req.body.username,
+      description: req.body.description,
+      date: Date.now(),
     });
 
     services

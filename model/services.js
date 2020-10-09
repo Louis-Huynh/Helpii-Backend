@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const serviceSchema = new mongoose.Schema({
+  username: String,
   title: String,
+  description: String,
+  date: Date,
 });
 
 serviceSchema.set("toJSON", {
