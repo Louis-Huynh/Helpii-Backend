@@ -60,16 +60,16 @@ app.post("/register", (req, res) => {
   routes.register(req, res);
 });
 
-app.post("/services", (req, res) => {
-  routes.postServices(req, res);
-});
-
 app.post("/shop", (req, res) => {
   routes.postShop(req, res);
 });
 
 app.post("/verify_email", (req, res) => {
   routes.verifyEmail(req, res);
+});
+
+app.post("/create_service", (req, res) => {
+  routes.create_service(req, res);
 });
 
 app.post("/reset_password", (req, res) => {
