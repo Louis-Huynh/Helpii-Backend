@@ -43,7 +43,7 @@ app.get("/services", (req, res) => {
   routes.services(req, res);
 });
 
-app.get("/services/id", (req, res) => {
+app.get("/services/:id", (req, res) => {
   routes.getServiceByID(req, res);
 });
 

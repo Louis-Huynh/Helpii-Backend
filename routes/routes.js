@@ -95,7 +95,11 @@ module.exports = {
   },
 
   getServiceByID: (req, res) => {
-    res.send("service by id");
+    Services.find({ _id: req.params.id })
+      .then((service) => {
+        res.send(service);
+      })
+      .catch((err) => res.send(err));
   },
 
   // Shop API
