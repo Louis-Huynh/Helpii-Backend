@@ -163,7 +163,8 @@ module.exports = {
   },
 
   resetPassword: (req, res) => {
-    "use strict";
+    const email = req.body.email;
+    ("use strict");
     const nodemailer = require("nodemailer");
 
     async function main() {
@@ -179,9 +180,9 @@ module.exports = {
       // send mail with defined transport object
       let info = await transporter.sendMail({
         from: process.env.EMAIL, // sender address
-        to: "kayleigh.jakubowski67@ethereal.email", // list of receivers
-        subject: "Hello =) ✔", // Subject line
-        text: "Hello world?2", // plain text body
+        to: email, // list of receivers
+        subject: "Sup my guy ✔", // Subject line
+        text: "Hello from the other siiiiiiiiiiiiiiide", // plain text body
         html: "<b>Hello world?</b>", // html body
       });
 
