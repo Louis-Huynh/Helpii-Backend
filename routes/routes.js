@@ -94,6 +94,24 @@ module.exports = {
     });
   },
 
+  getUser: (req, res) => {
+    User.find({})
+      .then((user) => {
+        res.send(user);
+      })
+      .catch((err) => res.send(err));
+  },
+
+  getSpecificUser: (req, res) => {
+    console.log("test");
+    console.log(req.params.username);
+    User.find({ username: req.params.username })
+      .then((user) => {
+        res.send(user);
+      })
+      .catch((err) => res.send(err));
+  },
+
   getServiceByID: (req, res) => {
     Services.find({ _id: req.params.id })
       .then((service) => {

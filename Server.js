@@ -52,8 +52,16 @@ app.get("/shop", (req, res) => {
   routes.shop(req, res);
 });
 
-app.get("/shop/id", (req, res) => {
+app.get("/shop/:id", (req, res) => {
   routes.getShopById(req, res);
+});
+
+app.get("/user", (req, res) => {
+  routes.getUser(req, res);
+});
+
+app.get("/user/:username", (req, res) => {
+  routes.getSpecificUser(req, res);
 });
 
 app.post("/register", (req, res) => {
