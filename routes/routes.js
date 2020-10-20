@@ -1,8 +1,15 @@
+require("dotenv").config();
+
 const bcrypt = require("bcrypt");
 const Services = require("../model/services");
 const Shop = require("../model/shop");
 const User = require("../model/user");
 require("dotenv").config();
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+const { getMaxListeners } = require("../model/services");
+const { response } = require("express");
+
 
 module.exports = {
   // Signin API
@@ -158,9 +165,34 @@ module.exports = {
   },
 
   resetPassword: (req, res) => {
-    "use strict";
-    const nodemailer = require("nodemailer");
+    const email = req.body.email;
+    ("use strict");
+    console.log("hllo", req.body);
 
+    let secret_token = "";
+
+    User.findOne({ email: "apple"}, (err, response) => {
+      console.log(response.id);
+      if (!response) {
+        console.log("Email is not in DB");
+        res.sendStatus(404);
+      } else {
+       
+        const payload = {
+          id:response.id,
+          email:email
+        }
+
+         secret_token = response.password;
+
+        const accessToken = jwt.sign(payload, secret_token);
+      }
+    })
+
+  
+      
+
+        
     async function main() {
       // create reusable transporter object using the default SMTP transport
       var transporter = nodemailer.createTransport({
@@ -174,10 +206,10 @@ module.exports = {
       // send mail with defined transport object
       let info = await transporter.sendMail({
         from: process.env.EMAIL, // sender address
-        to: "kayleigh.jakubowski67@ethereal.email", // list of receivers
-        subject: "Hello =) ✔", // Subject line
-        text: "Hello world?2", // plain text body
-        html: "<b>Hello world?</b>", // html body
+        to: email, // list of receivers
+        subject: "Sup my guy ✔", // Subject line
+        text: "Hello from the other siiiiiiiiiiiiiiide", // plain text body
+        html: '<p>Click <a href="http://localhost:3000/reset_password/' + secret_token + '">here</a> to reset your password</p>', // html body
       });
 
       console.log("Message sent: %s", info.messageId);
@@ -195,4 +227,5 @@ module.exports = {
 
     main().catch(console.error);
   },
+  
 };

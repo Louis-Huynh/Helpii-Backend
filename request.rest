@@ -1,0 +1,12 @@
+POST http://localhost:3001/reset_password
+Content-Type: application/json
+
+{
+    "email":"louis.huynh1234@gmail.com"
+}
+
+
+###
+
+GET http://localhost:3001/localhost:3000/forgotpassword
+
