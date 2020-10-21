@@ -10,7 +10,6 @@ const jwt = require("jsonwebtoken");
 const { getMaxListeners } = require("../model/services");
 const { response } = require("express");
 
-
 module.exports = {
   // Signin API
   signIn: (req, res) => {
@@ -164,68 +163,95 @@ module.exports = {
     });
   },
 
-  resetPassword: (req, res) => {
+  sendEmailToken: (req, res) => {
     const email = req.body.email;
     ("use strict");
     console.log("hllo", req.body);
 
-    let secret_token = "";
-
-    User.findOne({ email: "apple"}, (err, response) => {
+    User.findOne({ email: "apple" }, (err, response) => {
       console.log(response.id);
       if (!response) {
         console.log("Email is not in DB");
         res.sendStatus(404);
       } else {
-       
         const payload = {
-          id:response.id,
-          email:email
+          id: response.id,
+          email: email,
+        };
+
+        const secret_token = response.password;
+
+        const accessToken = jwt.sign(payload, secret_token, {
+          expiresIn: 3600,
+        });
+
+        async function main() {
+          // create reusable transporter object using the default SMTP transport
+          var transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL,
+              pass: process.env.EMAIL_PW,
+            },
+          });
+
+          // send mail with defined transport object
+          let info = await transporter.sendMail({
+            from: process.env.EMAIL, // sender address
+            to: email, // list of receivers
+            subject: "Sup my guy ✔", // Subject line
+            text: "Hello from the other siiiiiiiiiiiiiiide", // plain text body
+            html:
+              '<p>Click <a href="http://localhost:3000/reset_password/' +
+              payload.id +
+              "/" +
+              accessToken +
+              '">here</a> to reset your password</p>',
+          });
+
+          console.log("Message sent: %s", info.messageId);
+
+          transporter.sendMail(info, function (error, info) {
+            if (error) {
+              console.log(error);
+              res.status(400).json({ status: "Failure!" });
+            } else {
+              console.log("Email sent: " + info.response);
+              res.status(200).json({ status: "Success!" });
+            }
+          });
         }
 
-         secret_token = response.password;
-
-        const accessToken = jwt.sign(payload, secret_token);
+        main().catch(console.error);
       }
-    })
-
-  
-      
-
-        
-    async function main() {
-      // create reusable transporter object using the default SMTP transport
-      var transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.EMAIL_PW,
-        },
-      });
-
-      // send mail with defined transport object
-      let info = await transporter.sendMail({
-        from: process.env.EMAIL, // sender address
-        to: email, // list of receivers
-        subject: "Sup my guy ✔", // Subject line
-        text: "Hello from the other siiiiiiiiiiiiiiide", // plain text body
-        html: '<p>Click <a href="http://localhost:3000/reset_password/' + secret_token + '">here</a> to reset your password</p>', // html body
-      });
-
-      console.log("Message sent: %s", info.messageId);
-
-      transporter.sendMail(info, function (error, info) {
-        if (error) {
-          console.log(error);
-          res.status(400).json({ status: "Failure!" });
-        } else {
-          console.log("Email sent: " + info.response);
-          res.status(200).json({ status: "Success!" });
-        }
-      });
-    }
-
-    main().catch(console.error);
+    });
   },
-  
+
+  //verifies that the token was not tampered with
+  //If unaffected it gives access to change the
+  verifyEmailToken: (req, res) => {
+    //fetch user form db using id
+    //decrypt one time use token
+
+    console.log(req.params.token);
+
+    User.findOne({ _id: req.params.id }, (err, response) => {
+      if (err) res.setStatus(404).json({ message: "error!" });
+
+      jwt.verify(req.params.token, response.password, (err, user) => {
+        if (err) return res.json({ status: "Failure" }).sendStatus(403);
+        console.log("user: ", user);
+
+        res.json({ status: "Success" }).sendStatus(202);
+      });
+    });
+  },
+
+  changeForgotPassword: (req, res) => {
+    // const {userId, token} = req.params;
+    const { password } = req.body;
+    console.log("password: ", req.body);
+    console.log("req.params:", req.params);
+    res.json({ message: "hi from the latest" });
+  },
 };

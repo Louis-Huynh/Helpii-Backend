@@ -73,9 +73,16 @@ app.post("/verify_email", (req, res) => {
 });
 
 app.post("/reset_password", (req, res) => {
-  routes.resetPassword(req, res);
+  routes.sendEmailToken(req, res);
 });
 
+app.get("/reset_password/:id/:token", (req, res)=>{
+  routes.verifyEmailToken(req, res);
+})
+
+app.post("/reset_password/:id/:token", (req, res)=>{
+  routes.changeForgotPassword(req, res);
+})
 
 
 app.listen(port, () => {
