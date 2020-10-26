@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { getMaxListeners } = require("../model/services");
 const { response } = require("express");
+const user = require("../model/user");
 
 module.exports = {
   // Signin API
@@ -168,7 +169,7 @@ module.exports = {
     ("use strict");
     console.log("hllo", req.body);
 
-    User.findOne({ email: "apple" }, (err, response) => {
+    User.findOne({ email: email }, (err, response) => {
       console.log(response.id);
       if (!response) {
         console.log("Email is not in DB");
@@ -228,30 +229,70 @@ module.exports = {
   },
 
   //verifies that the token was not tampered with
-  //If unaffected it gives access to change the
+  //If unaffected it gives access to the form
   verifyEmailToken: (req, res) => {
     //fetch user form db using id
     //decrypt one time use token
 
-    console.log(req.params.token);
-
     User.findOne({ _id: req.params.id }, (err, response) => {
-      if (err) res.setStatus(404).json({ message: "error!" });
+      if (err) {
+        return res.status(404).json({ message: "error!" });
+      }
 
       jwt.verify(req.params.token, response.password, (err, user) => {
-        if (err) return res.json({ status: "Failure" }).sendStatus(403);
+        if (err) {
+          console.log("Will not display pw reset form");
+          return res.status(403).json({ Status: "Failure" });
+        }
         console.log("user: ", user);
 
-        res.json({ status: "Success" }).sendStatus(202);
+        res.status(202).json({ Status: "Success" });
       });
     });
   },
 
   changeForgotPassword: (req, res) => {
-    // const {userId, token} = req.params;
     const { password } = req.body;
-    console.log("password: ", req.body);
-    console.log("req.params:", req.params);
-    res.json({ message: "hi from the latest" });
+    const { id, token } = req.params;
+
+    console.log("password:", password);
+    console.log(`id:${id}, token:${token}`);
+
+    //finds user using id
+    User.findOne({ _id: id }, (err, response) => {
+      if (err) {
+        return res.status(404).json({ message: "error!" });
+      }
+      console.log("it finds it: ", response);
+
+      //verifies valid token using the token retrieved from param and the user's hashed pw(the key)
+      jwt.verify(token, response.password, (err, payload) => {
+        if (err) {
+          console.log("Invalid token");
+          return res.status(403).json({ status: "Failure" });
+        }
+
+        if (payload.id === response.id) {
+          const saltRounds = Math.floor(Math.random() * 10);
+          const myPlaintextPassword = password;
+
+          //hashes new password and stores it in db
+          bcrypt.hash(myPlaintextPassword, saltRounds, (err, hash) => {
+            if (err) res.status(400);
+
+            User.findOneAndUpdate(
+              { _id: id },
+              { password: hash },
+              { new: true }
+            )
+              .then((response) => {
+                console.log("password changed!");
+                res.status(202).json("Password changed accepted");
+              })
+              .catch((err) => res.status(500).json(err));
+          });
+        }
+      });
+    });
   },
 };

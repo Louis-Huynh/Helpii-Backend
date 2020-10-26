@@ -17,7 +17,11 @@ const url = process.env.MONGODB_URI;
 console.log("connecting to", url);
 
 mongoose
-  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
   .then((result) => {
     console.log("Connected to MongoDB");
   })
@@ -76,14 +80,13 @@ app.post("/reset_password", (req, res) => {
   routes.sendEmailToken(req, res);
 });
 
-app.get("/reset_password/:id/:token", (req, res)=>{
+app.get("/reset_password/:id/:token", (req, res) => {
   routes.verifyEmailToken(req, res);
-})
+});
 
-app.post("/reset_password/:id/:token", (req, res)=>{
+app.post("/reset_password/:id/:token", (req, res) => {
   routes.changeForgotPassword(req, res);
-})
-
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
