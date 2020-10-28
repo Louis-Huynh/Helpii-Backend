@@ -167,13 +167,11 @@ module.exports = {
   sendEmailToken: (req, res) => {
     const email = req.body.email;
     ("use strict");
-    console.log("hllo", req.body);
 
     User.findOne({ email: email }, (err, response) => {
-      console.log(response.id);
       if (!response) {
         console.log("Email is not in DB");
-        res.sendStatus(404);
+        return res.status(404);
       } else {
         const payload = {
           id: response.id,
@@ -183,12 +181,12 @@ module.exports = {
         const secret_token = response.password;
 
         const accessToken = jwt.sign(payload, secret_token, {
-          expiresIn: 3600,
+          expiresIn: "1h",
         });
 
         async function main() {
           // create reusable transporter object using the default SMTP transport
-          var transporter = nodemailer.createTransport({
+          var transporter = await nodemailer.createTransport({
             service: "gmail",
             auth: {
               user: process.env.EMAIL,
@@ -197,20 +195,27 @@ module.exports = {
           });
 
           // send mail with defined transport object
+          //Fails when inputting invalid emails that exist in the database
+          //[]Imp a check for valid emails in the registration
+
+          const urlReset = `http://localhost:3000/reset_password/${payload.id}/${accessToken}`;
+
           let info = await transporter.sendMail({
             from: process.env.EMAIL, // sender address
-            to: email, // list of receivers
-            subject: "Sup my guy ✔", // Subject line
-            text: "Hello from the other siiiiiiiiiiiiiiide", // plain text body
-            html:
-              '<p>Click <a href="http://localhost:3000/reset_password/' +
-              payload.id +
-              "/" +
-              accessToken +
-              '">here</a> to reset your password</p>',
-          });
+            to: email, //recipient
+            subject: "🥑Cheep cheep it's the Helpii police🦜", //email title
+            html: `
+            <div>
+		        <h3>Reset Password</h3>
+            <p>A password reset event has been triggered. The password reset window is limited to one hour.</p>
 
-          console.log("Message sent: %s", info.messageId);
+            <p>If you do not reset your password within the hour, you will need to submit a new request.</p>
+            <p>To complete the password reset process, visit the following link:</p>
+            <a href=${urlReset}>${urlReset}</a>
+	          </div>
+            
+            `,
+          });
 
           transporter.sendMail(info, function (error, info) {
             if (error) {
